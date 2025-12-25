@@ -4,8 +4,8 @@ import { XMLDocument } from "../../parser";
 import util from "util";
 const settings = {
   API_VERSION: "V2",
-  //SANDBOX_BASEURL: "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal",
-  SANDBOX_BASEURL: "https://gw-fatoora.zatca.gov.sa/e-invoicing/simulation",
+  SANDBOX_BASEURL: "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal",
+  //SANDBOX_BASEURL: "https://gw-fatoora.zatca.gov.sa/e-invoicing/simulation",
   // SANDBOX_BASEURL: "https://gw-fatoora.zatca.gov.sa/e-invoicing/core",
 };
 
