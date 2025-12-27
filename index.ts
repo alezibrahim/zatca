@@ -149,8 +149,8 @@ app.post("/test", async (req: Request, res: Response) => {
     }
     //let encodeXML=Buffer.from(signed_invoice_string).toString("base64")
     // Render QR and send response
-    const qrcode = await renderQR(qrValue);
-    res.status(200).send({ signed_invoice_string, invoice_hash, qrcode });
+    //const qrcode = await renderQR(qrValue);
+    res.status(200).send({ signed_invoice_string, invoice_hash, qrValue });
   } catch (error: any) {
     // console.log(error.response);
     //res.status(400).json(error);
@@ -279,8 +279,8 @@ app.post("/credit", async (req: Request, res: Response) => {
     }
 
     // Render QR and send response
-    const qrcode = await renderQR(qrValue);
-    res.status(200).send({ signed_invoice_string, invoice_hash, qrcode });
+    //const qrcode = await renderQR(qrValue);
+    res.status(200).send({ signed_invoice_string, invoice_hash, qrValue });
   } catch (error: any) {
     console.log(error);
     //res.status(400).send(error.toString());
@@ -408,8 +408,8 @@ app.post("/debit", async (req: Request, res: Response) => {
     }
 
     // Render QR and send response
-    const qrcode = await renderQR(qrValue);
-    res.status(200).send({ signed_invoice_string, invoice_hash, qrcode });
+    //const qrcode = await renderQR(qrValue);
+    res.status(200).send({ signed_invoice_string, invoice_hash, qrValue });
   } catch (error: any) {
     console.log(error);
     res.status(400).send(error?.response?.data?.validationResults || error);
