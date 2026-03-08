@@ -25,7 +25,7 @@ const cors_1 = __importDefault(require("cors"));
 //import dotenv from "dotenv";
 //dotenv.config();
 const qrcode_1 = require("qrcode");
-const port = 5000;
+const port = 5001;
 const app = (0, express_1.default)();
 const allowedOrigins = ["http://localhost"];
 const options = {
@@ -38,7 +38,7 @@ app.listen(port, () => {
     console.log(`now listening on port http://localhost:${port}`);
 });
 app.post("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
     try {
         //console.log(req.body);
         let invoice_type_code = "";
@@ -139,33 +139,29 @@ app.post("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         //let encodeXML=Buffer.from(signed_invoice_string).toString("base64")
         // Render QR and send response
-        const qrcode = yield renderQR(qrValue);
-        res.status(200).send({ signed_invoice_string, invoice_hash, qrcode });
+        //const qrcode = await renderQR(qrValue);
+        res.status(200).send({ signed_invoice_string, invoice_hash, qrValue });
     }
     catch (error) {
-        // console.log(error.response);
-        //res.status(400).json(error);
-        //console.log(error.response.data.validationResults);
-        res.status(400).send(((_l = (_k = error === null || error === void 0 ? void 0 : error.response) === null || _k === void 0 ? void 0 : _k.data) === null || _l === void 0 ? void 0 : _l.validationResults) || error);
-        //console.log(util.inspect(error, { showHidden: false, depth: null, colors: true }));
-        //console.log(error.response.data.validationResults.errorMessages);
+        console.error("Error in /test:", ((_k = error === null || error === void 0 ? void 0 : error.response) === null || _k === void 0 ? void 0 : _k.data) || error);
+        res.status(400).send(((_m = (_l = error === null || error === void 0 ? void 0 : error.response) === null || _l === void 0 ? void 0 : _l.data) === null || _m === void 0 ? void 0 : _m.validationResults) || ((_o = error === null || error === void 0 ? void 0 : error.response) === null || _o === void 0 ? void 0 : _o.data) || error.toString());
     }
 }));
 app.post("/credit", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x;
+    var _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1;
     try {
         // console.log(req.body);
         let invoice_type_code;
         // Ensure b2bcust is always safe to access
         const b2bcust = {
-            VAT_number: ((_m = req.body.b2bcust) === null || _m === void 0 ? void 0 : _m.VAT_number) || "",
-            VAT_name: ((_o = req.body.b2bcust) === null || _o === void 0 ? void 0 : _o.VAT_name) || "",
-            CRN_number: ((_p = req.body.b2bcust) === null || _p === void 0 ? void 0 : _p.CRN_number) || "",
-            building_number: ((_q = req.body.b2bcust) === null || _q === void 0 ? void 0 : _q.building_number) || "",
-            street: ((_r = req.body.b2bcust) === null || _r === void 0 ? void 0 : _r.street) || "",
-            city: ((_s = req.body.b2bcust) === null || _s === void 0 ? void 0 : _s.city) || "",
-            city_subdivision: ((_t = req.body.b2bcust) === null || _t === void 0 ? void 0 : _t.city_subdivision) || "",
-            postal_zone: ((_u = req.body.b2bcust) === null || _u === void 0 ? void 0 : _u.postal_zone) || "",
+            VAT_number: ((_p = req.body.b2bcust) === null || _p === void 0 ? void 0 : _p.VAT_number) || "",
+            VAT_name: ((_q = req.body.b2bcust) === null || _q === void 0 ? void 0 : _q.VAT_name) || "",
+            CRN_number: ((_r = req.body.b2bcust) === null || _r === void 0 ? void 0 : _r.CRN_number) || "",
+            building_number: ((_s = req.body.b2bcust) === null || _s === void 0 ? void 0 : _s.building_number) || "",
+            street: ((_t = req.body.b2bcust) === null || _t === void 0 ? void 0 : _t.street) || "",
+            city: ((_u = req.body.b2bcust) === null || _u === void 0 ? void 0 : _u.city) || "",
+            city_subdivision: ((_v = req.body.b2bcust) === null || _v === void 0 ? void 0 : _v.city_subdivision) || "",
+            postal_zone: ((_w = req.body.b2bcust) === null || _w === void 0 ? void 0 : _w.postal_zone) || "",
         };
         // Select invoice type and B2B info
         const b2bInfo = req.body.head.type === "b2b"
@@ -246,7 +242,7 @@ app.post("/credit", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             const clearedInvoiceXml = Buffer.from(a.clearedInvoice, "base64").toString();
             const xmlDoc = new DOMParser().parseFromString(clearedInvoiceXml, "text/xml");
             const qrTag = Array.from(xmlDoc.getElementsByTagName("cac:AdditionalDocumentReference")).find((ref) => { var _a; return ((_a = ref.getElementsByTagName("cbc:ID")[0]) === null || _a === void 0 ? void 0 : _a.textContent) === "QR"; });
-            qrValue = ((_v = qrTag === null || qrTag === void 0 ? void 0 : qrTag.getElementsByTagName("cbc:EmbeddedDocumentBinaryObject")[0]) === null || _v === void 0 ? void 0 : _v.textContent) || "";
+            qrValue = ((_x = qrTag === null || qrTag === void 0 ? void 0 : qrTag.getElementsByTagName("cbc:EmbeddedDocumentBinaryObject")[0]) === null || _x === void 0 ? void 0 : _x.textContent) || "";
             if (!qrValue) {
                 console.warn("QR tag not found in cleared invoice XML.");
             }
@@ -255,33 +251,29 @@ app.post("/credit", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             qrValue = qr;
         }
         // Render QR and send response
-        const qrcode = yield renderQR(qrValue);
-        res.status(200).send({ signed_invoice_string, invoice_hash, qrcode });
+        //const qrcode = await renderQR(qrValue);
+        res.status(200).send({ signed_invoice_string, invoice_hash, qrValue });
     }
     catch (error) {
-        console.log(error);
-        //res.status(400).send(error.toString());
-        res.status(400).send(((_x = (_w = error === null || error === void 0 ? void 0 : error.response) === null || _w === void 0 ? void 0 : _w.data) === null || _x === void 0 ? void 0 : _x.validationResults) || error);
-        //console.log(util.inspect(error, { showHidden: false, depth: null, colors: true }));
-        // console.log(error.response.data.validationResults.status);
-        //console.log(error.response.data.validationResults.errorMessages);
+        console.error("Error in /credit:", ((_y = error === null || error === void 0 ? void 0 : error.response) === null || _y === void 0 ? void 0 : _y.data) || error);
+        res.status(400).send(((_0 = (_z = error === null || error === void 0 ? void 0 : error.response) === null || _z === void 0 ? void 0 : _z.data) === null || _0 === void 0 ? void 0 : _0.validationResults) || ((_1 = error === null || error === void 0 ? void 0 : error.response) === null || _1 === void 0 ? void 0 : _1.data) || error.toString());
     }
 }));
 app.post("/debit", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8;
+    var _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14;
     try {
         // console.log(req.body);
         let invoice_type_code;
         // Ensure b2bcust is always safe to access
         const b2bcust = {
-            VAT_number: ((_y = req.body.b2bcust) === null || _y === void 0 ? void 0 : _y.VAT_number) || "",
-            VAT_name: ((_z = req.body.b2bcust) === null || _z === void 0 ? void 0 : _z.VAT_name) || "",
-            CRN_number: ((_0 = req.body.b2bcust) === null || _0 === void 0 ? void 0 : _0.CRN_number) || "",
-            building_number: ((_1 = req.body.b2bcust) === null || _1 === void 0 ? void 0 : _1.building_number) || "",
-            street: ((_2 = req.body.b2bcust) === null || _2 === void 0 ? void 0 : _2.street) || "",
-            city: ((_3 = req.body.b2bcust) === null || _3 === void 0 ? void 0 : _3.city) || "",
-            city_subdivision: ((_4 = req.body.b2bcust) === null || _4 === void 0 ? void 0 : _4.city_subdivision) || "",
-            postal_zone: ((_5 = req.body.b2bcust) === null || _5 === void 0 ? void 0 : _5.postal_zone) || "",
+            VAT_number: ((_2 = req.body.b2bcust) === null || _2 === void 0 ? void 0 : _2.VAT_number) || "",
+            VAT_name: ((_3 = req.body.b2bcust) === null || _3 === void 0 ? void 0 : _3.VAT_name) || "",
+            CRN_number: ((_4 = req.body.b2bcust) === null || _4 === void 0 ? void 0 : _4.CRN_number) || "",
+            building_number: ((_5 = req.body.b2bcust) === null || _5 === void 0 ? void 0 : _5.building_number) || "",
+            street: ((_6 = req.body.b2bcust) === null || _6 === void 0 ? void 0 : _6.street) || "",
+            city: ((_7 = req.body.b2bcust) === null || _7 === void 0 ? void 0 : _7.city) || "",
+            city_subdivision: ((_8 = req.body.b2bcust) === null || _8 === void 0 ? void 0 : _8.city_subdivision) || "",
+            postal_zone: ((_9 = req.body.b2bcust) === null || _9 === void 0 ? void 0 : _9.postal_zone) || "",
         };
         // Select invoice type and B2B info
         const b2bInfo = req.body.head.type === "b2b"
@@ -362,7 +354,7 @@ app.post("/debit", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             const clearedInvoiceXml = Buffer.from(a.clearedInvoice, "base64").toString();
             const xmlDoc = new DOMParser().parseFromString(clearedInvoiceXml, "text/xml");
             const qrTag = Array.from(xmlDoc.getElementsByTagName("cac:AdditionalDocumentReference")).find((ref) => { var _a; return ((_a = ref.getElementsByTagName("cbc:ID")[0]) === null || _a === void 0 ? void 0 : _a.textContent) === "QR"; });
-            qrValue = ((_6 = qrTag === null || qrTag === void 0 ? void 0 : qrTag.getElementsByTagName("cbc:EmbeddedDocumentBinaryObject")[0]) === null || _6 === void 0 ? void 0 : _6.textContent) || "";
+            qrValue = ((_10 = qrTag === null || qrTag === void 0 ? void 0 : qrTag.getElementsByTagName("cbc:EmbeddedDocumentBinaryObject")[0]) === null || _10 === void 0 ? void 0 : _10.textContent) || "";
             if (!qrValue) {
                 console.warn("QR tag not found in cleared invoice XML.");
             }
@@ -371,16 +363,12 @@ app.post("/debit", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             qrValue = qr;
         }
         // Render QR and send response
-        const qrcode = yield renderQR(qrValue);
-        res.status(200).send({ signed_invoice_string, invoice_hash, qrcode });
+        //const qrcode = await renderQR(qrValue);
+        res.status(200).send({ signed_invoice_string, invoice_hash, qrValue });
     }
     catch (error) {
-        console.log(error);
-        res.status(400).send(((_8 = (_7 = error === null || error === void 0 ? void 0 : error.response) === null || _7 === void 0 ? void 0 : _7.data) === null || _8 === void 0 ? void 0 : _8.validationResults) || error);
-        //res.status(400).send(error.toString());
-        //console.log(util.inspect(error, { showHidden: false, depth: null, colors: true }));
-        // console.log(error.response.data.validationResults.status);
-        //console.log(error.response.data.validationResults.errorMessages);
+        console.error("Error in /debit:", ((_11 = error === null || error === void 0 ? void 0 : error.response) === null || _11 === void 0 ? void 0 : _11.data) || error);
+        res.status(400).send(((_13 = (_12 = error === null || error === void 0 ? void 0 : error.response) === null || _12 === void 0 ? void 0 : _12.data) === null || _13 === void 0 ? void 0 : _13.validationResults) || ((_14 = error === null || error === void 0 ? void 0 : error.response) === null || _14 === void 0 ? void 0 : _14.data) || error.toString());
     }
 }));
 function renderQR(text, options) {
@@ -389,6 +377,7 @@ function renderQR(text, options) {
 }
 exports.renderQR = renderQR;
 app.post("/onboard", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _15, _16;
     try {
         const egsunit1 = req.body.egs;
         // Init a new EGS
@@ -400,11 +389,12 @@ app.post("/onboard", (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(200).send(result);
     }
     catch (error) {
-        console.log(error.response.data);
-        res.status(400).send(error.response.data);
+        console.error("Error in /onboard:", ((_15 = error === null || error === void 0 ? void 0 : error.response) === null || _15 === void 0 ? void 0 : _15.data) || error);
+        res.status(400).send(((_16 = error === null || error === void 0 ? void 0 : error.response) === null || _16 === void 0 ? void 0 : _16.data) || error.toString());
     }
 }));
 app.post("/onboard2", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _17, _18;
     try {
         const egsunit1 = req.body.egs;
         // Init a new EGS
@@ -418,11 +408,12 @@ app.post("/onboard2", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(200).send(result);
     }
     catch (error) {
-        console.log(error);
-        res.status(400).send(error);
+        console.error("Error in /onboard2:", ((_17 = error === null || error === void 0 ? void 0 : error.response) === null || _17 === void 0 ? void 0 : _17.data) || error);
+        res.status(400).send(((_18 = error === null || error === void 0 ? void 0 : error.response) === null || _18 === void 0 ? void 0 : _18.data) || error.toString());
     }
 }));
 app.post("/onboard_dev", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _19, _20;
     try {
         const egsunit1 = req.body.egs;
         // Init a new EGS
@@ -443,24 +434,24 @@ app.post("/onboard_dev", (req, res) => __awaiter(void 0, void 0, void 0, functio
         res.status(200).send(result_res);
     }
     catch (error) {
-        console.log(error);
-        res.status(400).send(error.toString());
+        console.error("Error in /onboard_dev:", ((_19 = error === null || error === void 0 ? void 0 : error.response) === null || _19 === void 0 ? void 0 : _19.data) || error);
+        res.status(400).send(((_20 = error === null || error === void 0 ? void 0 : error.response) === null || _20 === void 0 ? void 0 : _20.data) || error.toString());
     }
 }));
 app.post("/test2", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _9, _10, _11, _12, _13, _14, _15, _16;
+    var _21, _22, _23, _24, _25, _26, _27, _28, _29, _30;
     try {
         let invoice_type_code = "";
         // Ensure b2bcust is always safe to access
         const b2bcust = {
-            VAT_number: ((_9 = req.body.b2bcust) === null || _9 === void 0 ? void 0 : _9.VAT_number) || "",
-            VAT_name: ((_10 = req.body.b2bcust) === null || _10 === void 0 ? void 0 : _10.VAT_name) || "",
-            CRN_number: ((_11 = req.body.b2bcust) === null || _11 === void 0 ? void 0 : _11.CRN_number) || "",
-            building_number: ((_12 = req.body.b2bcust) === null || _12 === void 0 ? void 0 : _12.building_number) || "",
-            street: ((_13 = req.body.b2bcust) === null || _13 === void 0 ? void 0 : _13.street) || "",
-            city: ((_14 = req.body.b2bcust) === null || _14 === void 0 ? void 0 : _14.city) || "",
-            city_subdivision: ((_15 = req.body.b2bcust) === null || _15 === void 0 ? void 0 : _15.city_subdivision) || "",
-            postal_zone: ((_16 = req.body.b2bcust) === null || _16 === void 0 ? void 0 : _16.postal_zone) || "",
+            VAT_number: ((_21 = req.body.b2bcust) === null || _21 === void 0 ? void 0 : _21.VAT_number) || "",
+            VAT_name: ((_22 = req.body.b2bcust) === null || _22 === void 0 ? void 0 : _22.VAT_name) || "",
+            CRN_number: ((_23 = req.body.b2bcust) === null || _23 === void 0 ? void 0 : _23.CRN_number) || "",
+            building_number: ((_24 = req.body.b2bcust) === null || _24 === void 0 ? void 0 : _24.building_number) || "",
+            street: ((_25 = req.body.b2bcust) === null || _25 === void 0 ? void 0 : _25.street) || "",
+            city: ((_26 = req.body.b2bcust) === null || _26 === void 0 ? void 0 : _26.city) || "",
+            city_subdivision: ((_27 = req.body.b2bcust) === null || _27 === void 0 ? void 0 : _27.city_subdivision) || "",
+            postal_zone: ((_28 = req.body.b2bcust) === null || _28 === void 0 ? void 0 : _28.postal_zone) || "",
         };
         // Select invoice type and B2B info
         const b2bInfo = req.body.head.type === "b2b"
@@ -511,25 +502,25 @@ app.post("/test2", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).send(complianceStatus);
     }
     catch (error) {
-        console.log(error);
-        res.status(400).send(error.toString());
+        console.error("Error in /test2:", ((_29 = error === null || error === void 0 ? void 0 : error.response) === null || _29 === void 0 ? void 0 : _29.data) || error);
+        res.status(400).send(((_30 = error === null || error === void 0 ? void 0 : error.response) === null || _30 === void 0 ? void 0 : _30.data) || error.toString());
     }
 }));
 app.post("/credit2", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _17, _18, _19, _20, _21, _22, _23, _24;
+    var _31, _32, _33, _34, _35, _36, _37, _38, _39, _40;
     try {
         // console.log(req.body);
         let invoice_type_code;
         // Ensure b2bcust is always safe to access
         const b2bcust = {
-            VAT_number: ((_17 = req.body.b2bcust) === null || _17 === void 0 ? void 0 : _17.VAT_number) || "",
-            VAT_name: ((_18 = req.body.b2bcust) === null || _18 === void 0 ? void 0 : _18.VAT_name) || "",
-            CRN_number: ((_19 = req.body.b2bcust) === null || _19 === void 0 ? void 0 : _19.CRN_number) || "",
-            building_number: ((_20 = req.body.b2bcust) === null || _20 === void 0 ? void 0 : _20.building_number) || "",
-            street: ((_21 = req.body.b2bcust) === null || _21 === void 0 ? void 0 : _21.street) || "",
-            city: ((_22 = req.body.b2bcust) === null || _22 === void 0 ? void 0 : _22.city) || "",
-            city_subdivision: ((_23 = req.body.b2bcust) === null || _23 === void 0 ? void 0 : _23.city_subdivision) || "",
-            postal_zone: ((_24 = req.body.b2bcust) === null || _24 === void 0 ? void 0 : _24.postal_zone) || "",
+            VAT_number: ((_31 = req.body.b2bcust) === null || _31 === void 0 ? void 0 : _31.VAT_number) || "",
+            VAT_name: ((_32 = req.body.b2bcust) === null || _32 === void 0 ? void 0 : _32.VAT_name) || "",
+            CRN_number: ((_33 = req.body.b2bcust) === null || _33 === void 0 ? void 0 : _33.CRN_number) || "",
+            building_number: ((_34 = req.body.b2bcust) === null || _34 === void 0 ? void 0 : _34.building_number) || "",
+            street: ((_35 = req.body.b2bcust) === null || _35 === void 0 ? void 0 : _35.street) || "",
+            city: ((_36 = req.body.b2bcust) === null || _36 === void 0 ? void 0 : _36.city) || "",
+            city_subdivision: ((_37 = req.body.b2bcust) === null || _37 === void 0 ? void 0 : _37.city_subdivision) || "",
+            postal_zone: ((_38 = req.body.b2bcust) === null || _38 === void 0 ? void 0 : _38.postal_zone) || "",
         };
         // Select invoice type and B2B info
         const b2bInfo = req.body.head.type === "b2b"
@@ -591,27 +582,25 @@ app.post("/credit2", (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(200).send(complianceStatus);
     }
     catch (error) {
-        //console.log(error);
-        res.status(400).send(error.toString()); //console.log(util.inspect(error, { showHidden: false, depth: null, colors: true }));
-        // console.log(error.response.data.validationResults.status);
-        //console.log(error.response.data.validationResults.errorMessages);
+        console.error("Error in /credit2:", ((_39 = error === null || error === void 0 ? void 0 : error.response) === null || _39 === void 0 ? void 0 : _39.data) || error);
+        res.status(400).send(((_40 = error === null || error === void 0 ? void 0 : error.response) === null || _40 === void 0 ? void 0 : _40.data) || error.toString());
     }
 }));
 app.post("/debit2", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _25, _26, _27, _28, _29, _30, _31, _32;
+    var _41, _42, _43, _44, _45, _46, _47, _48, _49, _50;
     try {
         // console.log(req.body);
         let invoice_type_code;
         // Ensure b2bcust is always safe to access
         const b2bcust = {
-            VAT_number: ((_25 = req.body.b2bcust) === null || _25 === void 0 ? void 0 : _25.VAT_number) || "",
-            VAT_name: ((_26 = req.body.b2bcust) === null || _26 === void 0 ? void 0 : _26.VAT_name) || "",
-            CRN_number: ((_27 = req.body.b2bcust) === null || _27 === void 0 ? void 0 : _27.CRN_number) || "",
-            building_number: ((_28 = req.body.b2bcust) === null || _28 === void 0 ? void 0 : _28.building_number) || "",
-            street: ((_29 = req.body.b2bcust) === null || _29 === void 0 ? void 0 : _29.street) || "",
-            city: ((_30 = req.body.b2bcust) === null || _30 === void 0 ? void 0 : _30.city) || "",
-            city_subdivision: ((_31 = req.body.b2bcust) === null || _31 === void 0 ? void 0 : _31.city_subdivision) || "",
-            postal_zone: ((_32 = req.body.b2bcust) === null || _32 === void 0 ? void 0 : _32.postal_zone) || "",
+            VAT_number: ((_41 = req.body.b2bcust) === null || _41 === void 0 ? void 0 : _41.VAT_number) || "",
+            VAT_name: ((_42 = req.body.b2bcust) === null || _42 === void 0 ? void 0 : _42.VAT_name) || "",
+            CRN_number: ((_43 = req.body.b2bcust) === null || _43 === void 0 ? void 0 : _43.CRN_number) || "",
+            building_number: ((_44 = req.body.b2bcust) === null || _44 === void 0 ? void 0 : _44.building_number) || "",
+            street: ((_45 = req.body.b2bcust) === null || _45 === void 0 ? void 0 : _45.street) || "",
+            city: ((_46 = req.body.b2bcust) === null || _46 === void 0 ? void 0 : _46.city) || "",
+            city_subdivision: ((_47 = req.body.b2bcust) === null || _47 === void 0 ? void 0 : _47.city_subdivision) || "",
+            postal_zone: ((_48 = req.body.b2bcust) === null || _48 === void 0 ? void 0 : _48.postal_zone) || "",
         };
         // Select invoice type and B2B info
         const b2bInfo = req.body.head.type === "b2b"
@@ -673,10 +662,8 @@ app.post("/debit2", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(200).send(complianceStatus);
     }
     catch (error) {
-        console.log(error);
-        res.status(400).send(error.toString()); //console.log(util.inspect(error, { showHidden: false, depth: null, colors: true }));
-        // console.log(error.response.data.validationResults.status);
-        //console.log(error.response.data.validationResults.errorMessages);
+        console.error("Error in /debit2:", ((_49 = error === null || error === void 0 ? void 0 : error.response) === null || _49 === void 0 ? void 0 : _49.data) || error);
+        res.status(400).send(((_50 = error === null || error === void 0 ? void 0 : error.response) === null || _50 === void 0 ? void 0 : _50.data) || error.toString());
     }
 }));
 /*

@@ -93,7 +93,7 @@ const createInvoiceDigitalSignature = (invoice_hash, private_key_string) => {
     const invoice_hash_bytes = Buffer.from(invoice_hash, "base64");
     const cleanedup_private_key_string = (0, exports.cleanUpPrivateKeyString)(private_key_string);
     //ahmed for linux , mac os use this -----BEGIN EC PRIVATE KEY-----\n${cleanedup_private_key_string}\n-----END EC PRIVATE KEY-----`;
-    const wrapped_private_key_string = `${cleanedup_private_key_string}\n-----END EC PRIVATE KEY-----`;
+    const wrapped_private_key_string = `-----BEGIN EC PRIVATE KEY-----\n${cleanedup_private_key_string}\n-----END EC PRIVATE KEY-----`;
     //console.log(wrapped_private_key_string);
     var sign = (0, crypto_1.createSign)("sha256");
     sign.update(invoice_hash_bytes);

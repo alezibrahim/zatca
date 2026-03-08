@@ -21,6 +21,7 @@ const child_process_1 = require("child_process");
 const uuid_1 = require("uuid");
 const api_1 = __importDefault(require("../api"));
 const fs_1 = __importDefault(require("fs"));
+const os_1 = __importDefault(require("os"));
 const csr_template_1 = __importDefault(require("../templates/csr_template"));
 const path_1 = __importDefault(require("path"));
 const OpenSSL = (cmd) => {
@@ -28,13 +29,22 @@ const OpenSSL = (cmd) => {
         try {
             const command = (0, child_process_1.spawn)("openssl", cmd);
             let result = "";
+            let errorResult = "";
             command.stdout.on("data", (data) => {
                 result += data.toString();
             });
+            command.stderr.on("data", (data) => {
+                errorResult += data.toString();
+            });
             command.on("close", (code) => {
+                if (code !== 0) {
+                    console.error("OpenSSL Error stderr:", errorResult);
+                    return reject(new Error(`OpenSSL failed with code ${code}: ${errorResult}`));
+                }
                 return resolve(result);
             });
             command.on("error", (error) => {
+                console.error("Failed to start OpenSSL process:", error);
                 return reject(error);
             });
         }
@@ -62,15 +72,11 @@ const generateSecp256k1KeyPair = () => __awaiter(void 0, void 0, void 0, functio
 // Generate a signed ecdsaWithSHA256 CSR
 // 2.2.2 Profile specification of the Cryptographic Stamp identifiers. & CSR field contents / RDNs.
 const generateCSR = (egs_info, production, solution_name) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
     if (!egs_info.private_key)
         throw new Error("EGS has no private key");
-    // const private_key_file = `${process.env.TEMP_FOLDER ?? "C:/temp/"}${uuidv4()}.pem`;
-    //const csr_config_file = `${process.env.TEMP_FOLDER ?? "C:/temp/"}${uuidv4()}.cnf`;
-    const private_key_file = path_1.default.join((_a = process.env.TEMP_FOLDER) !== null && _a !== void 0 ? _a : path_1.default.resolve(__dirname, "tmp"), `${(0, uuid_1.v4)()}.pem`);
-    const csr_config_file = path_1.default.join((_b = process.env.TEMP_FOLDER) !== null && _b !== void 0 ? _b : path_1.default.resolve(__dirname, "tmp"), `${(0, uuid_1.v4)()}.cnf`);
-    //const private_key_file = `${"/tmp/"}${uuidv4()}.pem`;
-    //  const csr_config_file = `${"/tmp/"}${uuidv4()}.cnf`;
+    const tmpDir = process.env.TEMP_FOLDER || os_1.default.tmpdir();
+    const private_key_file = path_1.default.join(tmpDir, `${(0, uuid_1.v4)()}.pem`);
+    const csr_config_file = path_1.default.join(tmpDir, `${(0, uuid_1.v4)()}.cnf`);
     fs_1.default.writeFileSync(private_key_file, egs_info.private_key);
     fs_1.default.writeFileSync(csr_config_file, (0, csr_template_1.default)({
         egs_model: "DSS",

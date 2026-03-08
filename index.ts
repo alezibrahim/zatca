@@ -16,7 +16,7 @@ import cors from "cors";
 //import dotenv from "dotenv";
 //dotenv.config();
 import { QRCodeToDataURLOptions, toDataURL } from "qrcode";
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 const app: Express = express();
 
@@ -28,8 +28,12 @@ app.use(express.json());
 app.use(cors(options));
 //app.use(cors);
 
+app.get("/", (req, res) => {
+  res.send({ status: "alive", environment: process.env.NODE_ENV || "development" });
+});
+
 app.listen(port, () => {
-  console.log(`now listening on port http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
 
 app.post("/test", async (req: Request, res: Response) => {
