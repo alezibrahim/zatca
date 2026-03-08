@@ -7,6 +7,7 @@ import { spawn } from "child_process";
 import { v4 as uuidv4 } from "uuid";
 import API from "../api";
 import fs from "fs";
+import os from "os";
 import defaultCSRConfig from "../templates/csr_template";
 import { ZATCASimplifiedTaxInvoice } from "../ZATCASimplifiedTaxInvoice";
 import path from "path";
@@ -42,13 +43,22 @@ const OpenSSL = (cmd: string[]): Promise<string> => {
     try {
       const command = spawn("openssl", cmd);
       let result = "";
+      let errorResult = "";
       command.stdout.on("data", (data) => {
         result += data.toString();
       });
+      command.stderr.on("data", (data) => {
+        errorResult += data.toString();
+      });
       command.on("close", (code: number) => {
+        if (code !== 0) {
+          console.error("OpenSSL Error stderr:", errorResult);
+          return reject(new Error(`OpenSSL failed with code ${code}: ${errorResult}`));
+        }
         return resolve(result);
       });
       command.on("error", (error: any) => {
+        console.error("Failed to start OpenSSL process:", error);
         return reject(error);
       });
     } catch (error: any) {
@@ -66,9 +76,8 @@ const generateSecp256k1KeyPair = async (): Promise<string> => {
     if (!result.includes("-----BEGIN EC PRIVATE KEY-----"))
       throw new Error("Error no private key found in OpenSSL output.");
 
-    let private_key: string = `-----BEGIN EC PRIVATE KEY-----${
-      result.split("-----BEGIN EC PRIVATE KEY-----")[1]
-    }`.trim();
+    let private_key: string = `-----BEGIN EC PRIVATE KEY-----${result.split("-----BEGIN EC PRIVATE KEY-----")[1]
+      }`.trim();
     //console.log(result, private_key);
     return private_key;
   } catch (error) {
@@ -81,13 +90,9 @@ const generateSecp256k1KeyPair = async (): Promise<string> => {
 const generateCSR = async (egs_info: EGSUnitInfo, production: boolean, solution_name: string): Promise<string> => {
   if (!egs_info.private_key) throw new Error("EGS has no private key");
 
-  // const private_key_file = `${process.env.TEMP_FOLDER ?? "C:/temp/"}${uuidv4()}.pem`;
-  //const csr_config_file = `${process.env.TEMP_FOLDER ?? "C:/temp/"}${uuidv4()}.cnf`;
-  const private_key_file = path.join(process.env.TEMP_FOLDER ?? path.resolve(__dirname, "tmp"), `${uuidv4()}.pem`);
-  const csr_config_file = path.join(process.env.TEMP_FOLDER ?? path.resolve(__dirname, "tmp"), `${uuidv4()}.cnf`);
-
-  //const private_key_file = `${"/tmp/"}${uuidv4()}.pem`;
-  //  const csr_config_file = `${"/tmp/"}${uuidv4()}.cnf`;
+  const tmpDir = process.env.TEMP_FOLDER || os.tmpdir();
+  const private_key_file = path.join(tmpDir, `${uuidv4()}.pem`);
+  const csr_config_file = path.join(tmpDir, `${uuidv4()}.cnf`);
   fs.writeFileSync(private_key_file, egs_info.private_key);
   fs.writeFileSync(
     csr_config_file,
@@ -107,8 +112,8 @@ const generateCSR = async (egs_info: EGSUnitInfo, production: boolean, solution_
   );
 
   const cleanUp = () => {
-    fs.unlink(private_key_file, () => {});
-    fs.unlink(csr_config_file, () => {});
+    fs.unlink(private_key_file, () => { });
+    fs.unlink(csr_config_file, () => { });
   };
 
   try {
@@ -127,9 +132,8 @@ const generateCSR = async (egs_info: EGSUnitInfo, production: boolean, solution_
     if (!result.includes("-----BEGIN CERTIFICATE REQUEST-----"))
       throw new Error("Error no CSR found in OpenSSL output.");
 
-    let csr: string = `-----BEGIN CERTIFICATE REQUEST-----${
-      result.split("-----BEGIN CERTIFICATE REQUEST-----")[1]
-    }`.trim();
+    let csr: string = `-----BEGIN CERTIFICATE REQUEST-----${result.split("-----BEGIN CERTIFICATE REQUEST-----")[1]
+      }`.trim();
     //console.log(result);
     // console.log(csr, "..");
     cleanUp();

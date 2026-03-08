@@ -54,16 +54,16 @@ app.post("/test", async (req: Request, res: Response) => {
       req.body.head.type === "b2b"
         ? ((invoice_type_code = "0100000"), b2bcust)
         : ((invoice_type_code = "0200000"),
-          {
-            VAT_number: "",
-            VAT_name: "",
-            CRN_number: "",
-            building_number: "",
-            street: "",
-            city: "",
-            city_subdivision: "",
-            postal_zone: "",
-          });
+        {
+          VAT_number: "",
+          VAT_name: "",
+          CRN_number: "",
+          building_number: "",
+          street: "",
+          city: "",
+          city_subdivision: "",
+          postal_zone: "",
+        });
 
     const egsunit1: EGSUnitInfo = req.body.egs;
     const line_items1: ZATCASimplifiedInvoiceLineItem[] = req.body.line || [];
@@ -152,13 +152,8 @@ app.post("/test", async (req: Request, res: Response) => {
     //const qrcode = await renderQR(qrValue);
     res.status(200).send({ signed_invoice_string, invoice_hash, qrValue });
   } catch (error: any) {
-    // console.log(error.response);
-    //res.status(400).json(error);
-    //console.log(error.response.data.validationResults);
-
-    res.status(400).send(error?.response?.data?.validationResults || error);
-    //console.log(util.inspect(error, { showHidden: false, depth: null, colors: true }));
-    //console.log(error.response.data.validationResults.errorMessages);
+    console.error("Error in /test:", error?.response?.data || error);
+    res.status(400).send(error?.response?.data?.validationResults || error?.response?.data || error.toString());
   }
 });
 
@@ -184,16 +179,16 @@ app.post("/credit", async (req: Request, res: Response) => {
       req.body.head.type === "b2b"
         ? ((invoice_type_code = "0100000"), b2bcust)
         : ((invoice_type_code = "0200000"),
-          {
-            VAT_number: "",
-            VAT_name: "",
-            CRN_number: "",
-            building_number: "",
-            street: "",
-            city: "",
-            city_subdivision: "",
-            postal_zone: "",
-          });
+        {
+          VAT_number: "",
+          VAT_name: "",
+          CRN_number: "",
+          building_number: "",
+          street: "",
+          city: "",
+          city_subdivision: "",
+          postal_zone: "",
+        });
 
     //  console.log(invoice_type_code, b2bcust1);
     const egsunit1: EGSUnitInfo = req.body.egs;
@@ -282,13 +277,8 @@ app.post("/credit", async (req: Request, res: Response) => {
     //const qrcode = await renderQR(qrValue);
     res.status(200).send({ signed_invoice_string, invoice_hash, qrValue });
   } catch (error: any) {
-    console.log(error);
-    //res.status(400).send(error.toString());
-    res.status(400).send(error?.response?.data?.validationResults || error);
-
-    //console.log(util.inspect(error, { showHidden: false, depth: null, colors: true }));
-    // console.log(error.response.data.validationResults.status);
-    //console.log(error.response.data.validationResults.errorMessages);
+    console.error("Error in /credit:", error?.response?.data || error);
+    res.status(400).send(error?.response?.data?.validationResults || error?.response?.data || error.toString());
   }
 });
 
@@ -314,16 +304,16 @@ app.post("/debit", async (req: Request, res: Response) => {
       req.body.head.type === "b2b"
         ? ((invoice_type_code = "0100000"), b2bcust)
         : ((invoice_type_code = "0200000"),
-          {
-            VAT_number: "",
-            VAT_name: "",
-            CRN_number: "",
-            building_number: "",
-            street: "",
-            city: "",
-            city_subdivision: "",
-            postal_zone: "",
-          });
+        {
+          VAT_number: "",
+          VAT_name: "",
+          CRN_number: "",
+          building_number: "",
+          street: "",
+          city: "",
+          city_subdivision: "",
+          postal_zone: "",
+        });
     //  console.log(invoice_type_code, b2bcust1);
     const egsunit1: EGSUnitInfo = req.body.egs;
     const line_items1: ZATCASimplifiedInvoiceLineItem[] = req.body.line;
@@ -411,13 +401,8 @@ app.post("/debit", async (req: Request, res: Response) => {
     //const qrcode = await renderQR(qrValue);
     res.status(200).send({ signed_invoice_string, invoice_hash, qrValue });
   } catch (error: any) {
-    console.log(error);
-    res.status(400).send(error?.response?.data?.validationResults || error);
-
-    //res.status(400).send(error.toString());
-    //console.log(util.inspect(error, { showHidden: false, depth: null, colors: true }));
-    // console.log(error.response.data.validationResults.status);
-    //console.log(error.response.data.validationResults.errorMessages);
+    console.error("Error in /debit:", error?.response?.data || error);
+    res.status(400).send(error?.response?.data?.validationResults || error?.response?.data || error.toString());
   }
 });
 
@@ -440,8 +425,8 @@ app.post("/onboard", async (req: Request, res: Response) => {
 
     res.status(200).send(result);
   } catch (error: any) {
-    console.log(error.response.data);
-    res.status(400).send(error.response.data);
+    console.error("Error in /onboard:", error?.response?.data || error);
+    res.status(400).send(error?.response?.data || error.toString());
   }
 });
 
@@ -460,8 +445,8 @@ app.post("/onboard2", async (req: Request, res: Response) => {
 
     res.status(200).send(result);
   } catch (error: any) {
-    console.log(error);
-    res.status(400).send(error);
+    console.error("Error in /onboard2:", error?.response?.data || error);
+    res.status(400).send(error?.response?.data || error.toString());
   }
 });
 
@@ -497,8 +482,8 @@ app.post("/onboard_dev", async (req: Request, res: Response) => {
 
     res.status(200).send(result_res);
   } catch (error: any) {
-    console.log(error);
-    res.status(400).send(error.toString());
+    console.error("Error in /onboard_dev:", error?.response?.data || error);
+    res.status(400).send(error?.response?.data || error.toString());
   }
 });
 
@@ -523,16 +508,16 @@ app.post("/test2", async (req: Request, res: Response) => {
       req.body.head.type === "b2b"
         ? ((invoice_type_code = "0100000"), b2bcust)
         : ((invoice_type_code = "0200000"),
-          {
-            VAT_number: "",
-            VAT_name: "",
-            CRN_number: "",
-            building_number: "",
-            street: "",
-            city: "",
-            city_subdivision: "",
-            postal_zone: "",
-          });
+        {
+          VAT_number: "",
+          VAT_name: "",
+          CRN_number: "",
+          building_number: "",
+          street: "",
+          city: "",
+          city_subdivision: "",
+          postal_zone: "",
+        });
 
     const egsunit1: EGSUnitInfo = req.body.egs;
     const line_items1: ZATCASimplifiedInvoiceLineItem[] = req.body.line || [];
@@ -575,8 +560,8 @@ app.post("/test2", async (req: Request, res: Response) => {
 
     res.status(200).send(complianceStatus);
   } catch (error: any) {
-    console.log(error);
-    res.status(400).send(error.toString());
+    console.error("Error in /test2:", error?.response?.data || error);
+    res.status(400).send(error?.response?.data || error.toString());
   }
 });
 
@@ -602,16 +587,16 @@ app.post("/credit2", async (req: Request, res: Response) => {
       req.body.head.type === "b2b"
         ? ((invoice_type_code = "0100000"), b2bcust)
         : ((invoice_type_code = "0200000"),
-          {
-            VAT_number: "",
-            VAT_name: "",
-            CRN_number: "",
-            building_number: "",
-            street: "",
-            city: "",
-            city_subdivision: "",
-            postal_zone: "",
-          });
+        {
+          VAT_number: "",
+          VAT_name: "",
+          CRN_number: "",
+          building_number: "",
+          street: "",
+          city: "",
+          city_subdivision: "",
+          postal_zone: "",
+        });
 
     //  console.log(invoice_type_code, b2bcust1);
     const egsunit1: EGSUnitInfo = req.body.egs;
@@ -664,10 +649,8 @@ app.post("/credit2", async (req: Request, res: Response) => {
 
     res.status(200).send(complianceStatus);
   } catch (error: any) {
-    //console.log(error);
-    res.status(400).send(error.toString()); //console.log(util.inspect(error, { showHidden: false, depth: null, colors: true }));
-    // console.log(error.response.data.validationResults.status);
-    //console.log(error.response.data.validationResults.errorMessages);
+    console.error("Error in /credit2:", error?.response?.data || error);
+    res.status(400).send(error?.response?.data || error.toString());
   }
 });
 
@@ -693,16 +676,16 @@ app.post("/debit2", async (req: Request, res: Response) => {
       req.body.head.type === "b2b"
         ? ((invoice_type_code = "0100000"), b2bcust)
         : ((invoice_type_code = "0200000"),
-          {
-            VAT_number: "",
-            VAT_name: "",
-            CRN_number: "",
-            building_number: "",
-            street: "",
-            city: "",
-            city_subdivision: "",
-            postal_zone: "",
-          });
+        {
+          VAT_number: "",
+          VAT_name: "",
+          CRN_number: "",
+          building_number: "",
+          street: "",
+          city: "",
+          city_subdivision: "",
+          postal_zone: "",
+        });
     //  console.log(invoice_type_code, b2bcust1);
     const egsunit1: EGSUnitInfo = req.body.egs;
     const line_items1: ZATCASimplifiedInvoiceLineItem[] = req.body.line;
@@ -754,10 +737,8 @@ app.post("/debit2", async (req: Request, res: Response) => {
 
     res.status(200).send(complianceStatus);
   } catch (error: any) {
-    console.log(error);
-    res.status(400).send(error.toString()); //console.log(util.inspect(error, { showHidden: false, depth: null, colors: true }));
-    // console.log(error.response.data.validationResults.status);
-    //console.log(error.response.data.validationResults.errorMessages);
+    console.error("Error in /debit2:", error?.response?.data || error);
+    res.status(400).send(error?.response?.data || error.toString());
   }
 });
 
