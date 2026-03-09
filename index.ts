@@ -36,6 +36,17 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
+app.use(["/test", "/credit", "/debit"], (req: Request, res: Response, next: any) => {
+  res.header("Access-Control-Allow-Origin", "https://fatoora.cc");
+  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  next();
+});
+
 app.post("/test", async (req: Request, res: Response) => {
   try {
     //console.log(req.body);
