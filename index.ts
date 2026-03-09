@@ -20,9 +20,11 @@ const port = process.env.PORT || 5000;
 
 const app: Express = express();
 
-const allowedOrigins = ["http://localhost"];
+const allowedOrigins = ["http://localhost", "https://fatoora.cc"];
 const options: cors.CorsOptions = {
   origin: allowedOrigins,
+  methods: ["POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 app.use(express.json());
 app.use(cors(options));
